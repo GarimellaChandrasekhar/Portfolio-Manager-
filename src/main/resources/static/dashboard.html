@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Manager</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="light">
+
+<header class="top-bar">
+    <h2>Portfolio Manager</h2>
+
+    <div class="summary">
+        <span>Total Portfolio Value: <strong>$152,430.25</strong></span>
+        <span class="positive">Total Return: +12.8%</span>
+
+        <button class="primary">+ Add Asset</button>
+        <button>Remove Asset</button>
+
+        <!-- 🌙 Theme Toggle -->
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a class="active" href="dashboard.html">📊 Dashboard</a>
+        <a href="index.html">🎯 Goal Setting</a>
+    </aside>
+
+    <!-- Main -->
+    <main class="content">
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="card chart-card">
+                <h3>Asset Allocation</h3>
+                <div class="chart-container">
+                    <canvas id="allocationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <h3>Portfolio Performance</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Holdings -->
+        <div class="card table-card">
+            <h3>Your Holdings</h3>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Company</th>
+                    <th>Shares</th>
+                    <th>Current Price</th>
+                    <th>Cost Basis</th>
+                    <th>Market Value</th>
+                    <th>P/L</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>AAPL</td>
+                    <td>Apple Inc.</td>
+                    <td>35</td>
+                    <td>$145.32</td>
+                    <td>$120.00</td>
+                    <td>$5,086.20</td>
+                    <td class="positive">+$886.20</td>
+                </tr>
+                <tr>
+                    <td>TSLA</td>
+                    <td>Tesla Inc.</td>
+                    <td>20</td>
+                    <td>$720.15</td>
+                    <td>$650.00</td>
+                    <td>$14,403.00</td>
+                    <td class="positive">+$1,402.00</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="table-actions">
+                <a href="/add-holding.html">+ Add Holdings</a>
+                <a href="/remove-holding.html">− Remove Holdings</a>
+            </div>
+        </div>
+
+        <!-- Bottom Summary Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Cash Balance</h4>
+                <p class="blue">$5,200.00</p>
+            </div>
+            <div class="stat-card">
+                <h4>Stocks Value</h4>
+                <p class="green">$110,900.20</p>
+            </div>
+            <div class="stat-card">
+                <h4>Bonds Value</h4>
+                <p class="green">$25,330.00</p>
+            </div>
+            <div class="stat-card">
+                <h4>Crypto Value</h4>
+                <p>$11,000.05</p>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

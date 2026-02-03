@@ -1,0 +1,152 @@
+/* THEME VARIABLES */
+:root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --border: #e5e7eb;
+}
+
+body.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #e5e7eb;
+    --border: #334155;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Top Bar */
+.top-bar {
+    background: var(--card);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.summary span {
+    margin-right: 15px;
+}
+
+.primary {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+
+.theme-toggle {
+    margin-left: 10px;
+}
+
+/* Layout */
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 220px;
+    background: var(--card);
+    padding: 20px;
+    height: 100vh;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.sidebar a.active {
+    background: #0d6efd;
+    color: white;
+    border-radius: 6px;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Charts */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.chart-card {
+    height: 360px;
+}
+
+.chart-container {
+    height: 260px;
+}
+
+/* Cards */
+.card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Table */
+.table-card {
+    margin-top: 25px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: rgba(0,0,0,0.03);
+}
+
+.table-actions {
+    margin-top: 10px;
+}
+
+.table-actions a {
+    margin-right: 15px;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+/* Bottom Stats */
+.stats-grid {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.stat-card p {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.blue { color: #0d6efd; }
+.green { color: #16a34a; }
+.positive { color: #16a34a; font-weight: bold; }

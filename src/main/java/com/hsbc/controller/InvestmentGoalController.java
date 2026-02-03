@@ -22,5 +22,6 @@ public class InvestmentGoalController {
     public InvestmentGoal createGoal(@RequestBody GoalRequest request) {
         return service.createGoal(request);
     }
+
 }
 

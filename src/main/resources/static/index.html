@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Manager | Goal Setting</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Set Your Investment Goal</h1>
+
+    <form id="goalForm">
+        <div class="form-group">
+            <label>Goal Name</label>
+            <input type="text" id="goalName" required placeholder="e.g. Buy a Car">
+        </div>
+
+        <div class="form-group">
+            <label>Target Amount (₹)</label>
+            <input type="number" id="targetAmount" required>
+        </div>
+
+        <div class="form-group">
+            <label>Time Horizon (Years)</label>
+            <input type="number" id="timeHorizon" required>
+        </div>
+
+        <div class="form-group">
+            <label>Risk Level</label>
+            <select id="riskLevel" required>
+                <option value="">Select Risk</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Monthly Investment (Optional)</label>
+            <input type="number" id="monthlyInvestment">
+        </div>
+
+        <button type="submit">Create Goal</button>
+    </form>
+
+    <p id="responseMsg"></p>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

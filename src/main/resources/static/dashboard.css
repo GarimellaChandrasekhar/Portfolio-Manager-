@@ -135,6 +135,37 @@ th {
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hidden { display: none; }
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+}
+body.light {
+    background-color: #f4f6f9;
+    color: #000;
+}
+
+body.dark {
+    background-color: #121212;
+    color: #fff;
+}
+
+body.dark .card,
+body.dark table {
+    background-color: #1e1e1e;
+}
 
 .stat-card {
     background: var(--card);

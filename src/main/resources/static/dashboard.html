@@ -3,39 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Portfolio Manager</title>
+
     <link rel="stylesheet" href="dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body class="light">
 
+<!-- ================= TOP BAR ================= -->
 <header class="top-bar">
     <h2>Portfolio Manager</h2>
 
     <div class="summary">
-        <span>Total Portfolio Value: <strong>$152,430.25</strong></span>
-        <span class="positive">Total Return: +12.8%</span>
+        <span>
+            Total Portfolio Value:
+            <strong id="totalValue">$0.00</strong>
+        </span>
 
-        <button class="primary">+ Add Asset</button>
-        <button>Remove Asset</button>
+        <span id="totalReturn" class="positive">
+            Total Return: 0%
+        </span>
 
-        <!-- 🌙 Theme Toggle -->
+        <button class="primary" onclick="openModal()">+ Add Asset</button>
         <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
     </div>
 </header>
 
+<!-- ================= PAGE LAYOUT ================= -->
 <div class="container">
 
-    <!-- Sidebar -->
+    <!-- ========== SIDEBAR ========== -->
     <aside class="sidebar">
-        <a class="active" href="dashboard.html">📊 Dashboard</a>
+        <a class="active" href="#">📊 Dashboard</a>
         <a href="index.html">🎯 Goal Setting</a>
     </aside>
 
-    <!-- Main -->
+    <!-- ========== MAIN CONTENT ========== -->
     <main class="content">
 
-        <!-- Charts -->
+        <!-- ===== CHARTS ===== -->
         <div class="charts-grid">
+
             <div class="card chart-card">
                 <h3>Asset Allocation</h3>
                 <div class="chart-container">
@@ -44,14 +52,15 @@
             </div>
 
             <div class="card chart-card">
-                <h3>Portfolio Performance</h3>
+                <h3>Profit / Loss by Asset</h3>
                 <div class="chart-container">
                     <canvas id="performanceChart"></canvas>
                 </div>
             </div>
+
         </div>
 
-        <!-- Holdings -->
+        <!-- ===== HOLDINGS TABLE ===== -->
         <div class="card table-card">
             <h3>Your Holdings</h3>
 
@@ -60,64 +69,64 @@
                 <tr>
                     <th>Symbol</th>
                     <th>Company</th>
-                    <th>Shares</th>
+                    <th>Quantity</th>
+                    <th>Buy Price</th>
                     <th>Current Price</th>
-                    <th>Cost Basis</th>
                     <th>Market Value</th>
-                    <th>P/L</th>
+                    <th>P / L</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr>
-                    <td>AAPL</td>
-                    <td>Apple Inc.</td>
-                    <td>35</td>
-                    <td>$145.32</td>
-                    <td>$120.00</td>
-                    <td>$5,086.20</td>
-                    <td class="positive">+$886.20</td>
-                </tr>
-                <tr>
-                    <td>TSLA</td>
-                    <td>Tesla Inc.</td>
-                    <td>20</td>
-                    <td>$720.15</td>
-                    <td>$650.00</td>
-                    <td>$14,403.00</td>
-                    <td class="positive">+$1,402.00</td>
-                </tr>
-                </tbody>
-            </table>
 
-            <div class="table-actions">
-                <a href="/add-holding.html">+ Add Holdings</a>
-                <a href="/remove-holding.html">− Remove Holdings</a>
-            </div>
+                <!-- 🔴 Dynamic rows injected by JS -->
+                <tbody id="holdingsTableBody"></tbody>
+            </table>
         </div>
 
-        <!-- Bottom Summary Cards -->
+        <!-- ===== STATS ===== -->
         <div class="stats-grid">
             <div class="stat-card">
-                <h4>Cash Balance</h4>
-                <p class="blue">$5,200.00</p>
-            </div>
-            <div class="stat-card">
                 <h4>Stocks Value</h4>
-                <p class="green">$110,900.20</p>
+                <p id="stocksValue" class="green">$0.00</p>
             </div>
+
             <div class="stat-card">
-                <h4>Bonds Value</h4>
-                <p class="green">$25,330.00</p>
+                <h4>Mutual Funds Value</h4>
+                <p id="mfValue" class="green">$0.00</p>
             </div>
+
             <div class="stat-card">
-                <h4>Crypto Value</h4>
-                <p>$11,000.05</p>
+                <h4>Gold Value</h4>
+                <p id="goldValue" class="green">$0.00</p>
             </div>
         </div>
 
     </main>
 </div>
 
+<!-- ================= ADD ASSET MODAL ================= -->
+<div id="addAssetModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Add Asset</h3>
+
+        <input id="symbol" placeholder="Symbol (AAPL)" />
+        <input id="holdingName" placeholder="Company Name" />
+        <input id="quantity" type="number" placeholder="Quantity" />
+        <input id="price" type="number" placeholder="Purchase Price" />
+
+        <select id="assetType">
+            <option value="STOCK">Stock</option>
+            <option value="MUTUAL_FUND">Mutual Fund</option>
+            <option value="GOLD">Gold</option>
+        </select>
+
+        <div class="modal-actions">
+            <button class="primary" onclick="submitAsset()">Save</button>
+            <button onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= JS ================= -->
 <script src="dashboard.js"></script>
 </body>
 </html>

@@ -44,6 +44,40 @@ public class HoldingController {
     }
 
 
+    // UPDATE holding
+    @PutMapping("/{holdingId}")
+    public Holding updateHolding(
+            @PathVariable Long holdingId,
+            @RequestBody HoldingRequest req
+    ) {
+        Holding holding = holdingRepository.findById(holdingId)
+                .orElseThrow(() -> new RuntimeException("Holding not found"));
+
+        if (req.name != null && !req.name.isBlank()) {
+            holding.setName(req.name);
+        }
+        if (req.quantity != null) {
+            holding.setQuantity(req.quantity);
+        }
+        if (req.purchasePrice != null) {
+            holding.setPurchasePrice(req.purchasePrice);
+        }
+        if (req.assetType != null) {
+            holding.setAssetType(Holding.AssetType.valueOf(req.assetType));
+        }
+
+        return holdingRepository.save(holding);
+    }
+
+
+    // DELETE holding
+    @DeleteMapping("/{holdingId}")
+    public void deleteHolding(@PathVariable Long holdingId) {
+        if (!holdingRepository.existsById(holdingId)) {
+            throw new RuntimeException("Holding not found");
+        }
+        holdingRepository.deleteById(holdingId);
+    }
 
     @GetMapping("/{portfolioId}")
     public List<Holding> getHoldings(@PathVariable Long portfolioId) {

@@ -120,6 +120,8 @@
                         <th>Current Price</th>
                         <th>Value</th>
                         <th>P/L</th>
+                        <th>Actions</th>
+
                     </tr>
                     </thead>
                     <tbody id="holdingsTableBody">
@@ -130,6 +132,10 @@
                                 <p>No holdings yet. Add your first asset to get started!</p>
                             </div>
                         </td>
+                        <td>
+                            <button onclick="deleteHolding(HOLDING_ID)">🗑️</button>
+                        </td>
+
                     </tr>
                     </tbody>
                 </table>

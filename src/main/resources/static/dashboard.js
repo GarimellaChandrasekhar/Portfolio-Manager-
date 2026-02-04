@@ -60,6 +60,9 @@ function renderTable(holdings) {
                 <td class="${plClass}">
                     <strong>${plSign}$${Math.abs(pl).toFixed(2)}</strong>
                 </td>
+                 <td>
+                                    <button onclick="deleteHolding(${h.id})">🗑️</button>
+                                </td>
             </tr>
         `;
     });
@@ -209,6 +212,20 @@ function renderCharts(holdings) {
 }
 
 /* ================= SUMMARY ================= */
+async function deleteHolding(holdingId) {
+    if (!confirm("Delete this holding?")) return;
+
+    const res = await fetch(`${BASE_URL}/api/holdings/${holdingId}`, {
+        method: "DELETE"
+    });
+
+    if (!res.ok) {
+        alert("Failed to delete holding");
+        return;
+    }
+
+    loadDashboard(); // refresh table
+}
 
 function updateSummary(holdings) {
     let stock = 0, mf = 0, gold = 0;

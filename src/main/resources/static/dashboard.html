@@ -3,154 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Manager</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <title>Dashboard | Portfolio Manager</title>
+    <link rel="stylesheet" href="unified.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="light">
 
-<header class="top-bar">
-    <div class="header-content">
-        <h1 class="logo">
-            <span class="logo-icon">💼</span>
-            <span>Portfolio Manager</span>
-        </h1>
-
-        <div class="header-stats">
-            <div class="stat-pill">
-                <span class="stat-label">Total Value</span>
-                <strong id="totalValue" class="stat-value">₹0.00</strong>
-            </div>
-            <div class="stat-pill">
-                <span class="stat-label">Total Return</span>
-                <strong id="totalReturn" class="stat-value positive">+0%</strong>
-            </div>
-            <div class="stat-pill">
-                <span class="stat-label">Last Updated</span>
-                <strong id="lastUpdated" class="stat-value" style="font-size: 0.9rem;">--</strong>
-            </div>
-        </div>
-
-        <div class="header-actions">
-            <button class="btn-refresh" onclick="refreshPrices()" title="Refresh Prices">
-                <span class="refresh-icon">🔄</span>
-            </button>
-            <button class="btn-primary" onclick="openModal()">
-                <span class="btn-icon">+</span>
-                Add Asset
-            </button>
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <span class="theme-icon">🌙</span>
-            </button>
-        </div>
-    </div>
-</header>
-
 <div class="container">
+    <!-- Sidebar Navigation -->
     <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">
+                <span class="logo-icon">💼</span>
+                <span>Portfolio Manager</span>
+            </h1>
+        </div>
+
         <nav class="sidebar-nav">
-            <a class="nav-link active" href="#">
+            <a class="nav-link active" href="dashboard.html">
                 <span class="nav-icon">📊</span>
                 <span>Dashboard</span>
             </a>
             <a class="nav-link" href="index.html">
                 <span class="nav-icon">🎯</span>
-                <span>Goal Setting</span>
+                <span>Goal Planning</span>
             </a>
         </nav>
+
+        <div class="sidebar-info">
+            <h3>💡 Portfolio Insights</h3>
+            <p>Track your investments in real-time with live market prices and comprehensive analytics.</p>
+            <ul class="feature-list">
+                <li>✓ Live price updates</li>
+                <li>✓ Performance tracking</li>
+                <li>✓ Asset allocation</li>
+                <li>✓ P/L analysis</li>
+            </ul>
+        </div>
     </aside>
 
-    <main class="content">
-        <!-- Summary Cards -->
-        <div class="summary-grid">
-            <div class="summary-card stocks">
-                <div class="summary-icon">📈</div>
-                <div class="summary-info">
-                    <h4>Stocks</h4>
-                    <p id="stocksValue" class="summary-value">₹0.00</p>
-                </div>
-            </div>
-            <div class="summary-card mutual-funds">
-                <div class="summary-icon">💰</div>
-                <div class="summary-info">
-                    <h4>Mutual Funds</h4>
-                    <p id="mfValue" class="summary-value">₹0.00</p>
-                </div>
-            </div>
-            <div class="summary-card gold">
-                <div class="summary-icon">🪙</div>
-                <div class="summary-info">
-                    <h4>Gold</h4>
-                    <p id="goldValue" class="summary-value">₹0.00</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Section -->
-        <div class="charts-grid">
-            <div class="card chart-card">
-                <div class="card-header">
-                    <h3>Asset Allocation</h3>
-                    <span class="card-subtitle">Distribution by type</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="allocationChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card chart-card">
-                <div class="card-header">
-                    <h3>Performance</h3>
-                    <span class="card-subtitle">Profit/Loss by asset</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="performanceChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Holdings Table -->
-        <div class="card table-card">
-            <div class="card-header">
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="header-content">
                 <div>
-                    <h3>Your Holdings</h3>
-                    <span class="card-subtitle">All assets in your portfolio</span>
+                    <h2 class="page-title">Investment Dashboard</h2>
+                    <p class="page-subtitle">Monitor your portfolio performance</p>
                 </div>
-                <div class="price-status">
-                    <span class="status-indicator" id="priceStatus">
-                        <span class="status-dot"></span>
-                        <span>Live Prices</span>
-                    </span>
+
+                <div class="header-stats">
+                    <div class="stat-pill">
+                        <span class="stat-label">Total Value</span>
+                        <strong id="totalValue" class="stat-value">₹0.00</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-label">Total Return</span>
+                        <strong id="totalReturn" class="stat-value positive">+0%</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-label">Last Updated</span>
+                        <strong id="lastUpdated" class="stat-value" style="font-size: 0.875rem;">--</strong>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="refreshPrices()" title="Refresh Prices">
+                        <span class="refresh-icon">🔄</span>
+                    </button>
+                    <button class="btn-primary" onclick="openModal()">
+                        <span class="btn-icon">+</span>
+                        Add Asset
+                    </button>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
                 </div>
             </div>
-            <div class="table-wrapper">
-                <table class="holdings-table">
-                    <thead>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Name</th>
-                        <th>Quantity</th>
-                        <th>Purchase Price</th>
-                        <th>Current Price</th>
-                        <th>Value</th>
-                        <th>P/L</th>
-                        <th>P/L %</th>
-                        <th>Action</th>
+        </header>
 
-                    </tr>
-                    </thead>
-                    <tbody id="holdingsTableBody">
-                    <tr class="empty-state">
-                        <td colspan="8">
-                            <div class="empty-message">
-                                <span class="empty-icon">📊</span>
-                                <p>No holdings yet. Add your first asset to get started!</p>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card stocks">
+                    <div class="summary-icon">📈</div>
+                    <div class="summary-info">
+                        <h4>Stocks</h4>
+                        <p id="stocksValue" class="summary-value">₹0.00</p>
+                    </div>
+                </div>
+                <div class="summary-card mutual-funds">
+                    <div class="summary-icon">💰</div>
+                    <div class="summary-info">
+                        <h4>Mutual Funds</h4>
+                        <p id="mfValue" class="summary-value">₹0.00</p>
+                    </div>
+                </div>
+                <div class="summary-card gold">
+                    <div class="summary-icon">🪙</div>
+                    <div class="summary-info">
+                        <h4>Gold</h4>
+                        <p id="goldValue" class="summary-value">₹0.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Asset Allocation</h3>
+                            <p class="card-subtitle">Distribution by type</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Performance</h3>
+                            <p class="card-subtitle">Profit/Loss by asset</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Holdings Table -->
+            <div class="card table-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Your Holdings</h3>
+                        <p class="card-subtitle">All assets in your portfolio</p>
+                    </div>
+                    <div class="price-status">
+                        <span class="status-indicator" id="priceStatus">
+                            <span class="status-dot"></span>
+                            <span>Live Prices</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="holdings-table">
+                        <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Purchase Price</th>
+                            <th>Current Price</th>
+                            <th>Value</th>
+                            <th>P/L</th>
+                            <th>P/L %</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="holdingsTableBody">
+                        <tr class="empty-state">
+                            <td colspan="9">
+                                <div class="empty-message">
+                                    <span class="empty-icon">📊</span>
+                                    <p>No holdings yet. Add your first asset to get started!</p>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
@@ -239,5 +266,16 @@
 </div>
 
 <script src="dashboard.js"></script>
+<script>
+    // Theme initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        const themeIcon = document.querySelector('.theme-icon');
+
+        document.body.classList.remove('light', 'dark');
+        document.body.classList.add(savedTheme);
+        themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    });
+</script>
 </body>
 </html>

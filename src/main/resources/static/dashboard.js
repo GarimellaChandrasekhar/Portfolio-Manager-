@@ -168,11 +168,11 @@ async function refreshPrices() {
         updateLastUpdatedTime();
         updatePriceStatus('active');
 
-        showNotification("Prices updated successfully!", "success");
+        showNotification("✅ Prices updated successfully!", "success");
     } catch (err) {
         console.error("Refresh error:", err);
         updatePriceStatus('error');
-        showNotification("Failed to update prices", "error");
+        showNotification("❌ Failed to update prices", "error");
     }
 }
 
@@ -217,7 +217,7 @@ function renderTable(holdings) {
     if (holdings.length === 0) {
         tbody.innerHTML = `
             <tr class="empty-state">
-                <td colspan="8">
+                <td colspan="9">
                     <div class="empty-message">
                         <span class="empty-icon">📊</span>
                         <p>No holdings yet. Add your first asset to get started!</p>
@@ -250,15 +250,16 @@ function renderTable(holdings) {
                 <td class="${plClass}">
                     <strong>${plSign}${plPercent.toFixed(2)}%</strong>
                 </td>
-                  <td>
-                            <button class="btn-delete" onclick="deleteHolding(${h.id})" title="Delete">
-                                🗑️
-                            </button>
-                        </td>
+                <td>
+                    <button class="btn-delete" onclick="deleteHolding(${h.id})" title="Delete">
+                        🗑️
+                    </button>
+                </td>
             </tr>
         `;
     });
 }
+
 async function deleteHolding(holdingId) {
     const confirmDelete = confirm(
         "Are you sure you want to delete this asset?\nThis action cannot be undone."
@@ -276,11 +277,11 @@ async function deleteHolding(holdingId) {
             throw new Error(await res.text());
         }
 
-        showNotification("Asset deleted successfully", "success");
+        showNotification("✅ Asset deleted successfully", "success");
         loadDashboard(); // refresh UI
     } catch (err) {
         console.error("Delete failed:", err);
-        showNotification("Failed to delete asset", "error");
+        showNotification("❌ Failed to delete asset", "error");
     }
 }
 
@@ -318,8 +319,9 @@ function renderCharts(holdings) {
             legend: {
                 labels: {
                     font: {
-                        size: 12,
-                        family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto"
+                        size: 13,
+                        family: "'Plus Jakarta Sans', sans-serif",
+                        weight: 600
                     },
                     padding: 15,
                     usePointStyle: true,
@@ -413,12 +415,20 @@ function renderCharts(holdings) {
                         ticks: {
                             callback: function(value) {
                                 return '₹' + value.toLocaleString('en-IN');
+                            },
+                            font: {
+                                family: "'Plus Jakarta Sans', sans-serif"
                             }
                         }
                     },
                     x: {
                         grid: {
                             display: false
+                        },
+                        ticks: {
+                            font: {
+                                family: "'Plus Jakarta Sans', sans-serif"
+                            }
                         }
                     }
                 }
@@ -539,7 +549,7 @@ async function handleAssetSelection() {
         }
     } else {
         // If price fetch fails completely, show error
-        showNotification("Unable to fetch price for this asset. Please try again or check your API configuration.", "error");
+        showNotification("❌ Unable to fetch price for this asset. Please try again or check your API configuration.", "error");
         document.getElementById('assetSelect').value = '';
         console.error(`Failed to get price for ${symbol}`);
     }
@@ -585,17 +595,17 @@ async function submitAsset() {
 
         // Basic validation
         if (!symbol || !name || !assetType) {
-            showNotification("Please select an asset from the dropdown", "error");
+            showNotification("⚠️ Please select an asset from the dropdown", "warning");
             return;
         }
 
         if (quantity <= 0) {
-            showNotification("Please enter a valid quantity", "error");
+            showNotification("⚠️ Please enter a valid quantity", "warning");
             return;
         }
 
         if (!price || price <= 0) {
-            showNotification("Unable to fetch price. Please try selecting the asset again.", "error");
+            showNotification("❌ Unable to fetch price. Please try selecting the asset again.", "error");
             return;
         }
 
@@ -618,37 +628,55 @@ async function submitAsset() {
         closeModal();
         loadDashboard();
 
-        showNotification(`${symbol} added successfully at ₹${price.toFixed(2)}!`, "success");
+        showNotification(`✅ ${symbol} added successfully at ₹${price.toFixed(2)}!`, "success");
     } catch (err) {
         console.error("Add asset failed:", err);
-        showNotification("Failed to add asset. Please try again.", "error");
+        showNotification("❌ Failed to add asset. Please try again.", "error");
     }
 }
 
 /* ================= NOTIFICATIONS ================= */
 
 function showNotification(message, type = "info") {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(n => n.remove());
+
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
 
     let bgColor = '#3b82f6'; // info
-    if (type === 'success') bgColor = '#10b981';
-    if (type === 'error') bgColor = '#ef4444';
-    if (type === 'warning') bgColor = '#f59e0b';
+    let borderColor = '#2563eb';
+    if (type === 'success') {
+        bgColor = '#10b981';
+        borderColor = '#059669';
+    }
+    if (type === 'error') {
+        bgColor = '#ef4444';
+        borderColor = '#dc2626';
+    }
+    if (type === 'warning') {
+        bgColor = '#f59e0b';
+        borderColor = '#d97706';
+    }
 
     notification.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
+        top: 24px;
+        right: 24px;
+        padding: 16px 24px;
         background: ${bgColor};
         color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        border-left: 4px solid ${borderColor};
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         z-index: 2000;
         animation: slideInRight 0.3s ease;
-        max-width: 400px;
+        max-width: 420px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     `;
 
     document.body.appendChild(notification);
@@ -681,10 +709,6 @@ style.textContent = `
             transform: translateX(400px);
             opacity: 0;
         }
-    }
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
     }
 `;
 document.head.appendChild(style);

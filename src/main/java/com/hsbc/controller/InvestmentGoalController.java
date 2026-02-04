@@ -2,6 +2,7 @@ package com.hsbc.controller;
 
 
 
+import com.hsbc.dto.GoalInvestmentResponse;
 import com.hsbc.dto.GoalRequest;
 import com.hsbc.entity.InvestmentGoal;
 import com.hsbc.service.InvestmentGoalService;
@@ -19,7 +20,7 @@ public class InvestmentGoalController {
     }
 
     @PostMapping
-    public InvestmentGoal createGoal(@RequestBody GoalRequest request) {
+    public GoalInvestmentResponse createGoal(@RequestBody GoalRequest request) {
         return service.createGoal(request);
     }
 

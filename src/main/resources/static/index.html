@@ -2,49 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Portfolio Manager | Goal Setting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Manager | Goal Planning</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="container">
-    <h1>Set Your Investment Goal</h1>
+<div class="dashboard-container">
 
-    <form id="goalForm">
-        <div class="form-group">
-            <label>Goal Name</label>
-            <input type="text" id="goalName" required placeholder="e.g. Buy a Car">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Portfolio Manager</h2>
         </div>
 
-        <div class="form-group">
-            <label>Target Amount (₹)</label>
-            <input type="number" id="targetAmount" required>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">🎯</span>
+                <span>Goal Planning</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-info">
+            <h3>Goal-Based Investing</h3>
+            <p>Create personalized investment plans based on your time horizon and risk appetite.</p>
+            <ul class="feature-list">
+                <li>✔ Goal-based SIP allocation</li>
+                <li>✔ Stocks for growth</li>
+                <li>✔ Gold for stability</li>
+                <li>✔ Automated rebalancing</li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- Top Header -->
+        <header class="content-header">
+            <div>
+                <h1 class="page-title">Set Your Investment Goal</h1>
+                <p class="page-subtitle">Define your financial goals and let us create the perfect investment strategy</p>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+
+            <!-- Goal Form Card -->
+            <div class="card form-card">
+                <div class="card-header">
+                    <h2 class="card-title">Goal Details</h2>
+                    <p class="card-subtitle">Enter your investment preferences</p>
+                </div>
+
+                <form id="goalForm" class="goal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="goalName">Goal Name</label>
+                            <input type="text" id="goalName" placeholder="e.g., Buy a House, Child Education" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row two-cols">
+                        <div class="form-group">
+                            <label for="targetAmount">Target Amount</label>
+                            <div class="input-with-prefix">
+                                <span class="prefix">₹</span>
+                                <input type="number" id="targetAmount" placeholder="1000000" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="timeHorizon">Time Horizon</label>
+                            <div class="input-with-suffix">
+                                <input type="number" id="timeHorizon" placeholder="5" required>
+                                <span class="suffix">Years</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row two-cols">
+                        <div class="form-group">
+                            <label for="riskLevel">Risk Level</label>
+                            <select id="riskLevel" required>
+                                <option value="">Select Risk Level</option>
+                                <option value="LOW">🟢 Low Risk</option>
+                                <option value="MEDIUM">🟡 Medium Risk</option>
+                                <option value="HIGH">🔴 High Risk</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="monthlyInvestment">Monthly Investment</label>
+                            <div class="input-with-prefix">
+                                <span class="prefix">₹</span>
+                                <input type="number" id="monthlyInvestment" placeholder="10000" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <span>Create Investment Plan</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </form>
+
+                <div id="responseMsg" class="response-message"></div>
+            </div>
+
+            <!-- Result Card -->
+            <div id="resultCard" class="card result-card hidden">
+                <div class="card-header">
+                    <h2 class="card-title">📊 Your Investment Plan</h2>
+                    <span class="badge badge-success">Active</span>
+                </div>
+
+                <div class="result-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Goal</span>
+                        <span class="summary-value" id="resGoal">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Monthly Investment</span>
+                        <span class="summary-value highlight">₹<span id="resMonthly">0</span></span>
+                    </div>
+                </div>
+
+                <div class="allocation-section">
+                    <h3 class="section-title">Asset Allocation</h3>
+                    <div id="allocations" class="allocations-list"></div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="form-group">
-            <label>Time Horizon (Years)</label>
-            <input type="number" id="timeHorizon" required>
-        </div>
-
-        <div class="form-group">
-            <label>Risk Level</label>
-            <select id="riskLevel" required>
-                <option value="">Select Risk</option>
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Monthly Investment (Optional)</label>
-            <input type="number" id="monthlyInvestment">
-        </div>
-
-        <button type="submit">Create Goal</button>
-    </form>
-
-    <p id="responseMsg"></p>
+    </main>
 </div>
 
 <script src="app.js"></script>

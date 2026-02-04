@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Manager | Goal Planning</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Goal Planning | Portfolio Manager</title>
+    <link rel="stylesheet" href="unified.css">
 </head>
-<body>
+<body class="light">
 
 <div class="dashboard-container">
-
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2 class="sidebar-title">Portfolio Manager</h2>
+            <h1 class="sidebar-title">Portfolio Manager</h1>
         </div>
 
         <nav class="sidebar-nav">
@@ -21,43 +20,48 @@
                 <span class="nav-icon">📊</span>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="nav-item active">
+            <a href="index.html" class="nav-item active">
                 <span class="nav-icon">🎯</span>
                 <span>Goal Planning</span>
             </a>
         </nav>
 
         <div class="sidebar-info">
-            <h3>Goal-Based Investing</h3>
+            <h3>💡 Goal-Based Investing</h3>
             <p>Create personalized investment plans based on your time horizon and risk appetite.</p>
             <ul class="feature-list">
-                <li>✔ Goal-based SIP allocation</li>
-                <li>✔ Stocks for growth</li>
-                <li>✔ Gold for stability</li>
-                <li>✔ Automated rebalancing</li>
+                <li>✓ Goal-based SIP allocation</li>
+                <li>✓ Stocks for growth</li>
+                <li>✓ Gold for stability</li>
+                <li>✓ Automated rebalancing</li>
             </ul>
         </div>
     </aside>
 
     <!-- Main Content Area -->
     <main class="main-content">
-
         <!-- Top Header -->
         <header class="content-header">
-            <div>
+            <div style="flex: 1;">
                 <h1 class="page-title">Set Your Investment Goal</h1>
                 <p class="page-subtitle">Define your financial goals and let us create the perfect investment strategy</p>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
             </div>
         </header>
 
         <!-- Content Grid -->
         <div class="content-grid">
-
             <!-- Goal Form Card -->
             <div class="card form-card">
                 <div class="card-header">
-                    <h2 class="card-title">Goal Details</h2>
-                    <p class="card-subtitle">Enter your investment preferences</p>
+                    <div>
+                        <h2 class="card-title">Goal Details</h2>
+                        <p class="card-subtitle">Enter your investment preferences</p>
+                    </div>
                 </div>
 
                 <form id="goalForm" class="goal-form">
@@ -118,7 +122,9 @@
             <!-- Result Card -->
             <div id="resultCard" class="card result-card hidden">
                 <div class="card-header">
-                    <h2 class="card-title">📊 Your Investment Plan</h2>
+                    <div>
+                        <h2 class="card-title">📊 Your Investment Plan</h2>
+                    </div>
                     <span class="badge badge-success">Active</span>
                 </div>
 
@@ -138,9 +144,7 @@
                     <div id="allocations" class="allocations-list"></div>
                 </div>
             </div>
-
         </div>
-
     </main>
 </div>
 

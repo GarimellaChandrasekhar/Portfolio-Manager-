@@ -20,15 +20,22 @@
         <div class="header-stats">
             <div class="stat-pill">
                 <span class="stat-label">Total Value</span>
-                <strong id="totalValue" class="stat-value">$0.00</strong>
+                <strong id="totalValue" class="stat-value">₹0.00</strong>
             </div>
             <div class="stat-pill">
                 <span class="stat-label">Total Return</span>
                 <strong id="totalReturn" class="stat-value positive">+0%</strong>
             </div>
+            <div class="stat-pill">
+                <span class="stat-label">Last Updated</span>
+                <strong id="lastUpdated" class="stat-value" style="font-size: 0.9rem;">--</strong>
+            </div>
         </div>
 
         <div class="header-actions">
+            <button class="btn-refresh" onclick="refreshPrices()" title="Refresh Prices">
+                <span class="refresh-icon">🔄</span>
+            </button>
             <button class="btn-primary" onclick="openModal()">
                 <span class="btn-icon">+</span>
                 Add Asset
@@ -61,21 +68,21 @@
                 <div class="summary-icon">📈</div>
                 <div class="summary-info">
                     <h4>Stocks</h4>
-                    <p id="stocksValue" class="summary-value">$0.00</p>
+                    <p id="stocksValue" class="summary-value">₹0.00</p>
                 </div>
             </div>
             <div class="summary-card mutual-funds">
                 <div class="summary-icon">💰</div>
                 <div class="summary-info">
                     <h4>Mutual Funds</h4>
-                    <p id="mfValue" class="summary-value">$0.00</p>
+                    <p id="mfValue" class="summary-value">₹0.00</p>
                 </div>
             </div>
             <div class="summary-card gold">
                 <div class="summary-icon">🪙</div>
                 <div class="summary-info">
                     <h4>Gold</h4>
-                    <p id="goldValue" class="summary-value">$0.00</p>
+                    <p id="goldValue" class="summary-value">₹0.00</p>
                 </div>
             </div>
         </div>
@@ -106,36 +113,41 @@
         <!-- Holdings Table -->
         <div class="card table-card">
             <div class="card-header">
-                <h3>Your Holdings</h3>
-                <span class="card-subtitle">All assets in your portfolio</span>
+                <div>
+                    <h3>Your Holdings</h3>
+                    <span class="card-subtitle">All assets in your portfolio</span>
+                </div>
+                <div class="price-status">
+                    <span class="status-indicator" id="priceStatus">
+                        <span class="status-dot"></span>
+                        <span>Live Prices</span>
+                    </span>
+                </div>
             </div>
             <div class="table-wrapper">
                 <table class="holdings-table">
                     <thead>
                     <tr>
                         <th>Symbol</th>
-                        <th>Company</th>
+                        <th>Name</th>
                         <th>Quantity</th>
                         <th>Purchase Price</th>
                         <th>Current Price</th>
                         <th>Value</th>
                         <th>P/L</th>
-                        <th>Actions</th>
+                        <th>P/L %</th>
+                        <th>Action</th>
 
                     </tr>
                     </thead>
                     <tbody id="holdingsTableBody">
                     <tr class="empty-state">
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="empty-message">
                                 <span class="empty-icon">📊</span>
                                 <p>No holdings yet. Add your first asset to get started!</p>
                             </div>
                         </td>
-                        <td>
-                            <button onclick="deleteHolding(HOLDING_ID)">🗑️</button>
-                        </td>
-
                     </tr>
                     </tbody>
                 </table>
@@ -155,34 +167,67 @@
 
         <form class="modal-form" onsubmit="event.preventDefault(); submitAsset();">
             <div class="form-group">
-                <label for="symbol">Symbol</label>
-                <input id="symbol" type="text" placeholder="e.g., AAPL" required>
-            </div>
-
-            <div class="form-group">
-                <label for="holdingName">Company Name</label>
-                <input id="holdingName" type="text" placeholder="e.g., Apple Inc." required>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="quantity">Quantity</label>
-                    <input id="quantity" type="number" placeholder="0" min="0.01" step="0.01" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="price">Purchase Price</label>
-                    <input id="price" type="number" placeholder="$0.00" min="0.01" step="0.01" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="assetType">Asset Type</label>
-                <select id="assetType" required>
-                    <option value="STOCK">Stock</option>
-                    <option value="MUTUAL_FUND">Mutual Fund</option>
-                    <option value="GOLD">Gold</option>
+                <label for="assetSelect">Select Asset *</label>
+                <select id="assetSelect" required onchange="handleAssetSelection()">
+                    <option value="">-- Choose an asset --</option>
+                    <optgroup label="Stocks">
+                        <option value="TCS|Tata Consultancy Services|STOCK">TCS - Tata Consultancy Services</option>
+                        <option value="RELIANCE|Reliance Industries|STOCK">RELIANCE - Reliance Industries</option>
+                        <option value="HDFCBANK|HDFC Bank|STOCK">HDFCBANK - HDFC Bank</option>
+                        <option value="ICICIBANK|ICICI Bank|STOCK">ICICIBANK - ICICI Bank</option>
+                        <option value="INFY|Infosys|STOCK">INFY - Infosys</option>
+                        <option value="SBIN|State Bank of India|STOCK">SBIN - State Bank of India</option>
+                    </optgroup>
+                    <optgroup label="Mutual Funds">
+                        <option value="SBI-TAX|SBI Tax Saver Fund|MUTUAL_FUND">SBI Tax Saver Fund</option>
+                        <option value="ICICI-PRUD|ICICI Prudential Life|MUTUAL_FUND">ICICI Prudential Life</option>
+                    </optgroup>
+                    <optgroup label="Commodities">
+                        <option value="GOLD|Gold (per gram)|GOLD">Gold (per gram)</option>
+                    </optgroup>
                 </select>
+            </div>
+
+            <div class="form-group" style="display: none;">
+                <label for="symbol">Symbol</label>
+                <input id="symbol" type="text" readonly>
+            </div>
+
+            <div class="form-group" style="display: none;">
+                <label for="holdingName">Name</label>
+                <input id="holdingName" type="text" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity *</label>
+                <input id="quantity" type="number" placeholder="0" min="0.01" step="0.01" required>
+            </div>
+
+            <div class="form-group" style="display: none;">
+                <label for="assetType">Asset Type</label>
+                <input id="assetType" type="text" readonly>
+            </div>
+
+            <div class="form-group" style="display: none;">
+                <label for="price">Purchase Price</label>
+                <input id="price" type="number" readonly>
+            </div>
+
+            <div class="current-price-display" id="currentPriceDisplay" style="display: none;">
+                <div class="price-info-box">
+                    <div class="price-info">
+                        <span class="price-label">Current Market Price:</span>
+                        <span class="price-value" id="modalCurrentPrice">--</span>
+                    </div>
+                    <div class="price-note">
+                        <small>This price will be used as your purchase price</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading-price" id="loadingPrice" style="display: none;">
+                <div class="loading-spinner"></div>
+                <span>Fetching live price...</span>
             </div>
 
             <div class="modal-actions">

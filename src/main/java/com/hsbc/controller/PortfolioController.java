@@ -1,4 +1,4 @@
-package com.portfolio.controller;
+package com.hsbc.controller;
 
 import com.hsbc.entity.Holding;
 import com.hsbc.service.PortfolioService;

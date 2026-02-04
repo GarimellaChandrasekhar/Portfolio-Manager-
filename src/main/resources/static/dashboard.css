@@ -175,6 +175,32 @@ body {
     background: var(--border-color);
 }
 
+.btn-refresh {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-refresh:hover {
+    background: var(--accent-light);
+    border-color: var(--accent-primary);
+}
+
+.btn-refresh:hover .refresh-icon {
+    animation: spin 0.5s ease;
+}
+
+.refresh-icon {
+    font-size: 1.5rem;
+}
+
 .btn-icon {
     font-size: 1.25rem;
     line-height: 1;
@@ -330,6 +356,9 @@ body {
 
 .card-header {
     margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .card-header h3 {
@@ -342,6 +371,66 @@ body {
 .card-subtitle {
     font-size: 0.875rem;
     color: var(--text-tertiary);
+}
+
+/* ==================== PRICE STATUS ==================== */
+.price-status {
+    display: flex;
+    align-items: center;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-active {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.status-active .status-dot {
+    background: var(--success);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.status-loading {
+    background: var(--accent-light);
+    color: var(--accent-primary);
+}
+
+.status-loading .status-dot {
+    background: var(--accent-primary);
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.status-error {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.status-error .status-dot {
+    background: var(--danger);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 /* ==================== CHARTS ==================== */
@@ -577,6 +666,76 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+}
+
+.current-price-display {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border: 2px solid var(--accent-primary);
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.price-info-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.price-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.price-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.price-note {
+    text-align: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.price-note small {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.loading-price {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-price span {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .modal-actions {

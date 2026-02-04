@@ -3,7 +3,7 @@ const BASE_URL = "http://localhost:5400";
 
 // ⚠️ IMPORTANT: Replace this with your actual Finnhub API key
 // Get free API key from: https://finnhub.io/register
-const FINNHUB_API_KEY = "d61gfi1r01qufbsn69f0d61gfi1r01qufbsn69fg";
+const FINNHUB_API_KEY = "";
 
 let allocationChart = null;
 let plChart = null;

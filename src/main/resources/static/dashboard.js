@@ -9,6 +9,8 @@ let allocationChart = null;
 let plChart = null;
 let priceUpdateInterval = null;
 let currentInputMode = 'preset';
+let priceAlerts = [];
+let currentHoldings = [];
 
 // Company names mapping (fallback)
 const COMPANY_NAMES = {
@@ -34,11 +36,15 @@ const COMPANY_NAMES = {
 
 document.addEventListener("DOMContentLoaded", () => {
     checkAPIKey();
+    loadAlertsFromStorage();
     loadDashboard();
     loadNewsWidget();
 
     // Update prices every 60 seconds
-    priceUpdateInterval = setInterval(() => refreshPrices(), 60000);
+    priceUpdateInterval = setInterval(() => {
+        refreshPrices();
+        checkPriceAlerts();
+    }, 60000);
 });
 
 window.addEventListener('beforeunload', () => {
@@ -361,11 +367,17 @@ async function loadDashboard() {
         let holdings = await res.json();
         holdings = await updateLivePrices(holdings);
 
+        // Store current holdings for alerts
+        currentHoldings = holdings;
+
         renderTable(holdings);
         renderCharts(holdings);
         updateSummary(holdings);
         updateLastUpdatedTime();
         updatePriceStatus('active');
+
+        // Check alerts after loading
+        checkPriceAlerts();
     } catch (err) {
         console.error("Dashboard error:", err);
         updatePriceStatus('error');
@@ -381,6 +393,9 @@ async function refreshPrices() {
 
         let holdings = await res.json();
         holdings = await updateLivePrices(holdings);
+
+        // Store current holdings for alerts
+        currentHoldings = holdings;
 
         renderTable(holdings);
         renderCharts(holdings);
@@ -755,6 +770,291 @@ function showNotification(message, type = "info") {
     }, 5000);
 }
 
+/* ================= PRICE ALERTS SYSTEM ================= */
+
+function loadAlertsFromStorage() {
+    const saved = localStorage.getItem('priceAlerts');
+    if (saved) {
+        priceAlerts = JSON.parse(saved);
+        updateAlertBadge();
+    }
+}
+
+function saveAlertsToStorage() {
+    localStorage.setItem('priceAlerts', JSON.stringify(priceAlerts));
+    updateAlertBadge();
+}
+
+function updateAlertBadge() {
+    const badge = document.getElementById('alertBadge');
+    if (priceAlerts.length > 0) {
+        badge.textContent = priceAlerts.length;
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function openAlertModal() {
+    // Populate stock dropdown with current holdings
+    const stockSelect = document.getElementById('alertStock');
+    stockSelect.innerHTML = '<option value="">-- Choose a stock from your portfolio --</option>';
+
+    currentHoldings.forEach(holding => {
+        const option = document.createElement('option');
+        option.value = holding.symbol;
+        option.textContent = `${holding.symbol} - ${holding.name} (Current: $${(holding.currentPrice || holding.purchasePrice).toFixed(2)})`;
+        option.dataset.currentPrice = holding.currentPrice || holding.purchasePrice;
+        stockSelect.appendChild(option);
+    });
+
+    // Show current alerts
+    renderAlertList();
+
+    document.getElementById("alertModal").classList.remove("hidden");
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAlertModal() {
+    document.getElementById("alertModal").classList.add("hidden");
+    document.body.style.overflow = '';
+
+    // Reset form
+    document.getElementById('alertStock').value = '';
+    document.getElementById('alertType').value = 'above';
+    document.getElementById('alertPrice').value = '';
+    document.getElementById('alertCurrentPriceDisplay').style.display = 'none';
+}
+
+// Show current price when stock is selected
+document.addEventListener('DOMContentLoaded', () => {
+    const alertStock = document.getElementById('alertStock');
+    if (alertStock) {
+        alertStock.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            if (selected.value) {
+                const currentPrice = selected.dataset.currentPrice;
+                document.getElementById('alertCurrentPriceValue').textContent = `$${parseFloat(currentPrice).toFixed(2)}`;
+                document.getElementById('alertCurrentPriceDisplay').style.display = 'flex';
+            } else {
+                document.getElementById('alertCurrentPriceDisplay').style.display = 'none';
+            }
+        });
+    }
+});
+
+function createAlert() {
+    const symbol = document.getElementById('alertStock').value;
+    const type = document.getElementById('alertType').value;
+    const targetPrice = parseFloat(document.getElementById('alertPrice').value);
+
+    if (!symbol || !targetPrice || targetPrice <= 0) {
+        showNotification("⚠️ Please fill in all fields", "warning");
+        return;
+    }
+
+    // Find stock details
+    const holding = currentHoldings.find(h => h.symbol === symbol);
+    if (!holding) {
+        showNotification("❌ Stock not found in portfolio", "error");
+        return;
+    }
+
+    const currentPrice = holding.currentPrice || holding.purchasePrice;
+
+    // Validate alert logic
+    if (type === 'above' && targetPrice <= currentPrice) {
+        showNotification("⚠️ Target price must be higher than current price for 'Above' alerts", "warning");
+        return;
+    }
+
+    if (type === 'below' && targetPrice >= currentPrice) {
+        showNotification("⚠️ Target price must be lower than current price for 'Below' alerts", "warning");
+        return;
+    }
+
+    // Create new alert
+    const alert = {
+        id: Date.now(),
+        symbol: symbol,
+        name: holding.name,
+        type: type,
+        targetPrice: targetPrice,
+        currentPrice: currentPrice,
+        createdAt: new Date().toISOString(),
+        triggered: false
+    };
+
+    priceAlerts.push(alert);
+    saveAlertsToStorage();
+    renderAlertList();
+
+    // Reset form
+    document.getElementById('alertStock').value = '';
+    document.getElementById('alertType').value = 'above';
+    document.getElementById('alertPrice').value = '';
+    document.getElementById('alertCurrentPriceDisplay').style.display = 'none';
+
+    showNotification(`✅ Alert created for ${symbol}!`, "success");
+}
+
+function renderAlertList() {
+    const alertList = document.getElementById('alertList');
+    const alertCount = document.getElementById('alertCount');
+
+    alertCount.textContent = priceAlerts.length;
+
+    if (priceAlerts.length === 0) {
+        alertList.innerHTML = `
+            <div class="empty-message" style="padding: 2rem; text-align: center;">
+                <span class="empty-icon">🔔</span>
+                <p>No active alerts. Create one to get notified!</p>
+            </div>
+        `;
+        return;
+    }
+
+    alertList.innerHTML = '';
+
+    priceAlerts.forEach(alert => {
+        const alertItem = document.createElement('div');
+        alertItem.className = 'alert-item';
+
+        const typeText = alert.type === 'above' ? '▲ Above' : '▼ Below';
+        const typeClass = alert.type === 'above' ? 'alert-type-above' : 'alert-type-below';
+
+        alertItem.innerHTML = `
+            <div class="alert-item-header">
+                <div class="alert-stock-info">
+                    <strong>${alert.symbol}</strong>
+                    <span class="alert-stock-name">${alert.name}</span>
+                </div>
+                <button class="alert-delete-btn" onclick="deleteAlert(${alert.id})" title="Delete Alert">
+                    ✕
+                </button>
+            </div>
+            <div class="alert-item-details">
+                <div class="alert-detail">
+                    <span class="alert-detail-label">Type:</span>
+                    <span class="alert-type-badge ${typeClass}">${typeText}</span>
+                </div>
+                <div class="alert-detail">
+                    <span class="alert-detail-label">Target:</span>
+                    <span class="alert-detail-value">$${alert.targetPrice.toFixed(2)}</span>
+                </div>
+                <div class="alert-detail">
+                    <span class="alert-detail-label">Set at:</span>
+                    <span class="alert-detail-value">$${alert.currentPrice.toFixed(2)}</span>
+                </div>
+            </div>
+        `;
+
+        alertList.appendChild(alertItem);
+    });
+}
+
+function deleteAlert(alertId) {
+    priceAlerts = priceAlerts.filter(alert => alert.id !== alertId);
+    saveAlertsToStorage();
+    renderAlertList();
+    showNotification("🗑️ Alert deleted", "success");
+}
+
+async function checkPriceAlerts() {
+    if (priceAlerts.length === 0 || currentHoldings.length === 0) return;
+
+    for (const alert of priceAlerts) {
+        if (alert.triggered) continue;
+
+        // Find current holding
+        const holding = currentHoldings.find(h => h.symbol === alert.symbol);
+        if (!holding) continue;
+
+        const currentPrice = holding.currentPrice || holding.purchasePrice;
+
+        let triggered = false;
+
+        if (alert.type === 'above' && currentPrice >= alert.targetPrice) {
+            triggered = true;
+        } else if (alert.type === 'below' && currentPrice <= alert.targetPrice) {
+            triggered = true;
+        }
+
+        if (triggered) {
+            alert.triggered = true;
+            saveAlertsToStorage();
+            showPriceAlertPopup(alert, currentPrice);
+
+            // Remove triggered alert after showing popup
+            setTimeout(() => {
+                priceAlerts = priceAlerts.filter(a => a.id !== alert.id);
+                saveAlertsToStorage();
+                renderAlertList();
+            }, 5000);
+        }
+    }
+}
+
+function showPriceAlertPopup(alert, currentPrice) {
+    // Play notification sound (optional - browser may block)
+    try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVqzn77BdGAg+ltryxnMpBSuBzvLZiTYIG2m98+SZSAwNUKXh8LhlHAU2jdXyzn0vBSh+zPLaizsIHG/C8OSaSwwOVqzn8LJfGgpBmdzxx3InBSuCz/PajjkIF2u+8+OZRwwMT6Xh8LllHQU1j9XyzH4xBSh+zPDbizwIHXHD8OSZTA0RW7Ln8LNeGQk/mdvxxnMoBCWAz/LZiTYHFmq+8+SaRwwMUKXg8LplHQU2jtXyzH4vBSh+zPPaizwIF3HD8OWaTAwKVKvm77BdGAo/mdvxx3MoBCWAzvLZiTcHF2u/8+OZSAwNUaXh8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKvm77BdGApBm9zxx3MoBCWAzvLZiTcHGGy/8+OYRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGApBm9zyx3MoBCWAzvLZiTcHGGy/8+OZRwwMUaXg8LplHQU1jdXzzH4vBSh+zPPaizwIF3HC8OWaTAwKVKzm77BdGA==');
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+    } catch (e) {}
+
+    // Create custom alert popup
+    const popup = document.createElement('div');
+    popup.className = 'price-alert-popup';
+
+    const typeEmoji = alert.type === 'above' ? '📈' : '📉';
+    const typeText = alert.type === 'above' ? 'reached above' : 'dropped below';
+    const changePercent = ((currentPrice - alert.currentPrice) / alert.currentPrice * 100).toFixed(2);
+    const changeClass = changePercent >= 0 ? 'positive' : 'negative';
+
+    popup.innerHTML = `
+        <div class="alert-popup-header">
+            <span class="alert-popup-icon">${typeEmoji}</span>
+            <h3>Price Alert Triggered!</h3>
+            <button class="alert-popup-close" onclick="this.parentElement.parentElement.remove()">✕</button>
+        </div>
+        <div class="alert-popup-body">
+            <div class="alert-popup-stock">
+                <strong>${alert.symbol}</strong>
+                <span>${alert.name}</span>
+            </div>
+            <div class="alert-popup-prices">
+                <div class="alert-popup-price-item">
+                    <span class="label">Target Price:</span>
+                    <span class="value">$${alert.targetPrice.toFixed(2)}</span>
+                </div>
+                <div class="alert-popup-price-item">
+                    <span class="label">Current Price:</span>
+                    <span class="value highlight">$${currentPrice.toFixed(2)}</span>
+                </div>
+                <div class="alert-popup-price-item">
+                    <span class="label">Change:</span>
+                    <span class="value ${changeClass}">${changePercent >= 0 ? '+' : ''}${changePercent}%</span>
+                </div>
+            </div>
+            <p class="alert-popup-message">
+                <strong>${alert.symbol}</strong> has ${typeText} your target price of <strong>$${alert.targetPrice.toFixed(2)}</strong>
+            </p>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Animate in
+    setTimeout(() => popup.classList.add('show'), 10);
+
+    // Auto remove after 10 seconds
+    setTimeout(() => {
+        popup.classList.remove('show');
+        setTimeout(() => popup.remove(), 300);
+    }, 10000);
+}
+
 /* ================= STYLES ================= */
 
 const style = document.createElement('style');
@@ -905,5 +1205,350 @@ style.textContent = `
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Bell Alert Button */
+    .btn-alert {
+        position: relative;
+        background: var(--bg-tertiary, #f1f5f9);
+        border: 1px solid var(--border-color, #e2e8f0);
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-alert:hover {
+        background: var(--accent-light, #dbeafe);
+        border-color: var(--accent-primary, #3b82f6);
+        transform: scale(1.05);
+    }
+
+    .alert-icon {
+        font-size: 1.5rem;
+    }
+
+    .alert-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.15rem 0.4rem;
+        border-radius: 10px;
+        min-width: 18px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Alert Modal Specific Styles */
+    .modal-body {
+        padding: 0;
+    }
+
+    .alert-create-section {
+        padding: 2rem;
+        border-bottom: 2px solid var(--border-color, #e2e8f0);
+    }
+
+    .alert-create-section h4 {
+        margin-bottom: 1.5rem;
+        color: var(--text-primary, #0f172a);
+        font-size: 1.1rem;
+    }
+
+    .alert-form .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert-current-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: var(--bg-tertiary, #f1f5f9);
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .alert-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary, #475569);
+        font-weight: 600;
+    }
+
+    .alert-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-primary, #3b82f6);
+    }
+
+    /* Alert List Section */
+    .alert-list-section {
+        padding: 2rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .alert-list-section h4 {
+        margin-bottom: 1.5rem;
+        color: var(--text-primary, #0f172a);
+        font-size: 1.1rem;
+    }
+
+    .alert-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .alert-item {
+        background: var(--bg-secondary, #ffffff);
+        border: 2px solid var(--border-color, #e2e8f0);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .alert-item:hover {
+        border-color: var(--accent-primary, #3b82f6);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .alert-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .alert-stock-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .alert-stock-info strong {
+        font-size: 1.1rem;
+        color: var(--text-primary, #0f172a);
+    }
+
+    .alert-stock-name {
+        font-size: 0.875rem;
+        color: var(--text-secondary, #475569);
+    }
+
+    .alert-delete-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-tertiary, #94a3b8);
+        font-size: 1.5rem;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .alert-delete-btn:hover {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+
+    .alert-item-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .alert-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .alert-detail-label {
+        font-size: 0.75rem;
+        color: var(--text-tertiary, #94a3b8);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .alert-detail-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary, #0f172a);
+    }
+
+    .alert-type-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .alert-type-above {
+        background: #d1fae5;
+        color: #059669;
+    }
+
+    .alert-type-below {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    /* Price Alert Popup */
+    .price-alert-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: var(--bg-secondary, #ffffff);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        z-index: 3000;
+        width: 90%;
+        max-width: 450px;
+        opacity: 0;
+        transition: all 0.3s ease;
+        border: 3px solid var(--accent-primary, #3b82f6);
+    }
+
+    .price-alert-popup.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .alert-popup-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-bottom: 2px solid var(--border-color, #e2e8f0);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+    }
+
+    .alert-popup-icon {
+        font-size: 2rem;
+        animation: bounce 0.6s ease infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .alert-popup-header h3 {
+        flex: 1;
+        margin: 0;
+        font-size: 1.25rem;
+        color: var(--text-primary, #0f172a);
+    }
+
+    .alert-popup-close {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-tertiary, #94a3b8);
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .alert-popup-close:hover {
+        background: var(--bg-tertiary, #f1f5f9);
+    }
+
+    .alert-popup-body {
+        padding: 1.5rem;
+    }
+
+    .alert-popup-stock {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-popup-stock strong {
+        display: block;
+        font-size: 1.5rem;
+        color: var(--text-primary, #0f172a);
+        margin-bottom: 0.25rem;
+    }
+
+    .alert-popup-stock span {
+        font-size: 0.95rem;
+        color: var(--text-secondary, #475569);
+    }
+
+    .alert-popup-prices {
+        background: var(--bg-tertiary, #f1f5f9);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-popup-price-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color, #e2e8f0);
+    }
+
+    .alert-popup-price-item:last-child {
+        border-bottom: none;
+    }
+
+    .alert-popup-price-item .label {
+        font-size: 0.875rem;
+        color: var(--text-secondary, #475569);
+        font-weight: 600;
+    }
+
+    .alert-popup-price-item .value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary, #0f172a);
+    }
+
+    .alert-popup-price-item .value.highlight {
+        font-size: 1.4rem;
+        color: var(--accent-primary, #3b82f6);
+    }
+
+    .alert-popup-message {
+        text-align: center;
+        padding: 1rem;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--text-primary, #0f172a);
+    }
+
+    .alert-popup-message strong {
+        color: var(--accent-primary, #3b82f6);
+    }
 `;
 document.head.appendChild(style);

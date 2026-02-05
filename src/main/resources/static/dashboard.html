@@ -3,241 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Manager</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <title>Dashboard | Portfolio Manager</title>
+    <link rel="stylesheet" href="unified.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="light">
 
-<header class="top-bar">
-    <div class="header-content">
-        <h1 class="logo">
-            <span class="logo-icon">💼</span>
-            <span>Portfolio Manager</span>
-        </h1>
-
-        <div class="header-stats">
-            <div class="stat-pill">
-                <span class="stat-label">Total Value</span>
-                <strong id="totalValue" class="stat-value">₹0.00</strong>
-            </div>
-            <div class="stat-pill">
-                <span class="stat-label">Total Return</span>
-                <strong id="totalReturn" class="stat-value positive">+0%</strong>
-            </div>
-            <div class="stat-pill">
-                <span class="stat-label">Last Updated</span>
-                <strong id="lastUpdated" class="stat-value" style="font-size: 0.9rem;">--</strong>
-            </div>
-        </div>
-
-        <div class="header-actions">
-            <button class="btn-refresh" onclick="refreshPrices()" title="Refresh Prices">
-                <span class="refresh-icon">🔄</span>
-            </button>
-            <button class="btn-primary" onclick="openModal()">
-                <span class="btn-icon">+</span>
-                Add Asset
-            </button>
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <span class="theme-icon">🌙</span>
-            </button>
-        </div>
-    </div>
-</header>
-
 <div class="container">
+    <!-- Sidebar Navigation -->
     <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">
+                <span class="logo-icon">💼</span>
+                <span>Portfolio Manager</span>
+            </h1>
+        </div>
+
         <nav class="sidebar-nav">
-            <a class="nav-link active" href="#">
+            <a class="nav-link active" href="dashboard.html">
                 <span class="nav-icon">📊</span>
                 <span>Dashboard</span>
             </a>
             <a class="nav-link" href="index.html">
                 <span class="nav-icon">🎯</span>
-                <span>Goal Setting</span>
+                <span>Goal Planning</span>
+            </a>
+            <a class="nav-link" href="trending-news.html">
+                <span class="nav-icon">📰</span>
+                <span>Trending News</span>
             </a>
         </nav>
+
+        <div class="sidebar-info">
+            <h3>💡 Portfolio Insights</h3>
+            <p>Track your US stock investments in real-time with live market prices powered by Finnhub.</p>
+            <ul class="feature-list">
+                <li>✓ Live US stock prices</li>
+                <li>✓ Custom ticker input</li>
+                <li>✓ Performance tracking</li>
+                <li>✓ P/L analysis</li>
+            </ul>
+        </div>
     </aside>
 
-    <main class="content">
-        <!-- Summary Cards -->
-        <div class="summary-grid">
-            <div class="summary-card stocks">
-                <div class="summary-icon">📈</div>
-                <div class="summary-info">
-                    <h4>Stocks</h4>
-                    <p id="stocksValue" class="summary-value">₹0.00</p>
-                </div>
-            </div>
-            <div class="summary-card mutual-funds">
-                <div class="summary-icon">💰</div>
-                <div class="summary-info">
-                    <h4>Mutual Funds</h4>
-                    <p id="mfValue" class="summary-value">₹0.00</p>
-                </div>
-            </div>
-            <div class="summary-card gold">
-                <div class="summary-icon">🪙</div>
-                <div class="summary-info">
-                    <h4>Gold</h4>
-                    <p id="goldValue" class="summary-value">₹0.00</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Section -->
-        <div class="charts-grid">
-            <div class="card chart-card">
-                <div class="card-header">
-                    <h3>Asset Allocation</h3>
-                    <span class="card-subtitle">Distribution by type</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="allocationChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card chart-card">
-                <div class="card-header">
-                    <h3>Performance</h3>
-                    <span class="card-subtitle">Profit/Loss by asset</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="performanceChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Holdings Table -->
-        <div class="card table-card">
-            <div class="card-header">
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="header-content">
                 <div>
-                    <h3>Your Holdings</h3>
-                    <span class="card-subtitle">All assets in your portfolio</span>
+                    <h2 class="page-title">Investment Dashboard</h2>
+                    <p class="page-subtitle">Monitor your US stock portfolio performance</p>
                 </div>
-                <div class="price-status">
-                    <span class="status-indicator" id="priceStatus">
-                        <span class="status-dot"></span>
-                        <span>Live Prices</span>
-                    </span>
+
+                <div class="header-stats">
+                    <div class="stat-pill">
+                        <span class="stat-label">Total Value</span>
+                        <strong id="totalValue" class="stat-value">$0.00</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-label">Total Return</span>
+                        <strong id="totalReturn" class="stat-value positive">+0%</strong>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-label">Last Updated</span>
+                        <strong id="lastUpdated" class="stat-value" style="font-size: 0.875rem;">--</strong>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="refreshPrices()" title="Refresh Prices">
+                        <span class="refresh-icon">🔄</span>
+                    </button>
+                    <button class="btn-primary" onclick="openModal()">
+                        <span class="btn-icon">+</span>
+                        Add Stock
+                    </button>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
                 </div>
             </div>
-            <div class="table-wrapper">
-                <table class="holdings-table">
-                    <thead>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Name</th>
-                        <th>Quantity</th>
-                        <th>Purchase Price</th>
-                        <th>Current Price</th>
-                        <th>Value</th>
-                        <th>P/L</th>
-                        <th>P/L %</th>
-                        <th>Action</th>
+        </header>
 
-                    </tr>
-                    </thead>
-                    <tbody id="holdingsTableBody">
-                    <tr class="empty-state">
-                        <td colspan="8">
-                            <div class="empty-message">
-                                <span class="empty-icon">📊</span>
-                                <p>No holdings yet. Add your first asset to get started!</p>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card stocks">
+                    <div class="summary-icon">📈</div>
+                    <div class="summary-info">
+                        <h4>Total Stocks Value</h4>
+                        <p id="stocksValue" class="summary-value">$0.00</p>
+                    </div>
+                </div>
+                <div class="summary-card mutual-funds">
+                    <div class="summary-icon">💰</div>
+                    <div class="summary-info">
+                        <h4>Total Profit/Loss</h4>
+                        <p id="totalPL" class="summary-value">$0.00</p>
+                    </div>
+                </div>
+                <div class="summary-card gold">
+                    <div class="summary-icon">📊</div>
+                    <div class="summary-info">
+                        <h4>Holdings Count</h4>
+                        <p id="holdingsCount" class="summary-value">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Portfolio Allocation</h3>
+                            <p class="card-subtitle">Distribution by stock value</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Performance</h3>
+                            <p class="card-subtitle">Profit/Loss by stock</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market News Section -->
+            <div class="card news-widget-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">📰 Market News</h3>
+                        <p class="card-subtitle">Latest stock market updates</p>
+                    </div>
+                    <a href="trending-news.html" class="view-all-link">
+                        View All →
+                    </a>
+                </div>
+                <div id="dashboardNewsWidget" class="news-widget-container">
+                    <div class="news-widget-loading">
+                        <div class="loading-spinner-small"></div>
+                        <span>Loading news...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Holdings Table -->
+            <div class="card table-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Your Holdings</h3>
+                        <p class="card-subtitle">All US stocks in your portfolio</p>
+                    </div>
+                    <div class="price-status">
+                        <span class="status-indicator" id="priceStatus">
+                            <span class="status-dot"></span>
+                            <span>Live Prices</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="holdings-table">
+                        <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Company</th>
+                            <th>Shares</th>
+                            <th>Avg Cost</th>
+                            <th>Current Price</th>
+                            <th>Market Value</th>
+                            <th>P/L</th>
+                            <th>P/L %</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="holdingsTableBody">
+                        <tr class="empty-state">
+                            <td colspan="9">
+                                <div class="empty-message">
+                                    <span class="empty-icon">📊</span>
+                                    <p>No stocks yet. Add your first US stock to get started!</p>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
 </div>
 
-<!-- Add Asset Modal -->
+<!-- Add Stock Modal -->
 <div id="addAssetModal" class="modal hidden">
     <div class="modal-overlay" onclick="closeModal()"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Add New Asset</h3>
+            <h3>Add US Stock</h3>
             <button class="modal-close" onclick="closeModal()" aria-label="Close modal">&times;</button>
         </div>
 
         <form class="modal-form" onsubmit="event.preventDefault(); submitAsset();">
+            <!-- Mode Toggle -->
             <div class="form-group">
-                <label for="assetSelect">Select Asset *</label>
-                <select id="assetSelect" required onchange="handleAssetSelection()">
-                    <option value="">-- Choose an asset --</option>
-                    <optgroup label="Stocks">
-                        <option value="TCS|Tata Consultancy Services|STOCK">TCS - Tata Consultancy Services</option>
-                        <option value="RELIANCE|Reliance Industries|STOCK">RELIANCE - Reliance Industries</option>
-                        <option value="HDFCBANK|HDFC Bank|STOCK">HDFCBANK - HDFC Bank</option>
-                        <option value="ICICIBANK|ICICI Bank|STOCK">ICICIBANK - ICICI Bank</option>
-                        <option value="INFY|Infosys|STOCK">INFY - Infosys</option>
-                        <option value="SBIN|State Bank of India|STOCK">SBIN - State Bank of India</option>
-                    </optgroup>
-                    <optgroup label="Mutual Funds">
-                        <option value="SBI-TAX|SBI Tax Saver Fund|MUTUAL_FUND">SBI Tax Saver Fund</option>
-                        <option value="ICICI-PRUD|ICICI Prudential Life|MUTUAL_FUND">ICICI Prudential Life</option>
-                    </optgroup>
-                    <optgroup label="Commodities">
-                        <option value="GOLD|Gold (per gram)|GOLD">Gold (per gram)</option>
-                    </optgroup>
-                </select>
+                <div class="input-mode-toggle">
+                    <button type="button" class="toggle-btn active" id="presetBtn" onclick="switchToPreset()">
+                        📋 Popular Stocks
+                    </button>
+                    <button type="button" class="toggle-btn" id="customBtn" onclick="switchToCustom()">
+                        ✏️ Enter Ticker
+                    </button>
+                </div>
             </div>
 
-            <div class="form-group" style="display: none;">
-                <label for="symbol">Symbol</label>
-                <input id="symbol" type="text" readonly>
+            <!-- Preset Selection Mode -->
+            <div id="presetMode">
+                <div class="form-group">
+                    <label for="assetSelect">Select Stock *</label>
+                    <select id="assetSelect" onchange="handleAssetSelection()">
+                        <option value="">-- Choose a stock --</option>
+                        <optgroup label="Tech Giants">
+                            <option value="AAPL">AAPL - Apple Inc.</option>
+                            <option value="MSFT">MSFT - Microsoft Corporation</option>
+                            <option value="GOOGL">GOOGL - Alphabet Inc.</option>
+                            <option value="AMZN">AMZN - Amazon.com Inc.</option>
+                            <option value="META">META - Meta Platforms Inc.</option>
+                            <option value="NVDA">NVDA - NVIDIA Corporation</option>
+                            <option value="TSLA">TSLA - Tesla Inc.</option>
+                        </optgroup>
+                        <optgroup label="Financial Services">
+                            <option value="JPM">JPM - JPMorgan Chase & Co.</option>
+                            <option value="V">V - Visa Inc.</option>
+                            <option value="MA">MA - Mastercard Inc.</option>
+                            <option value="BAC">BAC - Bank of America Corp.</option>
+                        </optgroup>
+                        <optgroup label="Healthcare">
+                            <option value="JNJ">JNJ - Johnson & Johnson</option>
+                            <option value="UNH">UNH - UnitedHealth Group</option>
+                            <option value="PFE">PFE - Pfizer Inc.</option>
+                        </optgroup>
+                        <optgroup label="Consumer">
+                            <option value="WMT">WMT - Walmart Inc.</option>
+                            <option value="PG">PG - Procter & Gamble Co.</option>
+                            <option value="KO">KO - The Coca-Cola Company</option>
+                            <option value="NKE">NKE - Nike Inc.</option>
+                        </optgroup>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group" style="display: none;">
-                <label for="holdingName">Name</label>
-                <input id="holdingName" type="text" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="quantity">Quantity *</label>
-                <input id="quantity" type="number" placeholder="0" min="0.01" step="0.01" required>
-            </div>
-
-            <div class="form-group" style="display: none;">
-                <label for="assetType">Asset Type</label>
-                <input id="assetType" type="text" readonly>
-            </div>
-
-            <div class="form-group" style="display: none;">
-                <label for="price">Purchase Price</label>
-                <input id="price" type="number" readonly>
-            </div>
-
-            <div class="current-price-display" id="currentPriceDisplay" style="display: none;">
-                <div class="price-info-box">
-                    <div class="price-info">
-                        <span class="price-label">Current Market Price:</span>
-                        <span class="price-value" id="modalCurrentPrice">--</span>
+            <!-- Custom Ticker Mode -->
+            <div id="customMode" style="display: none;">
+                <div class="form-group">
+                    <label for="customTicker">Enter Ticker Symbol *</label>
+                    <div class="ticker-input-group">
+                        <input
+                                id="customTicker"
+                                type="text"
+                                placeholder="e.g., AAPL, MSFT, GOOGL"
+                                onkeyup="this.value = this.value.toUpperCase()">
+                        <button type="button" class="btn-fetch" onclick="fetchTickerInfo()">
+                            🔍 Fetch
+                        </button>
                     </div>
-                    <div class="price-note">
-                        <small>This price will be used as your purchase price</small>
+                    <small class="helper-text">
+                        💡 Enter any US stock ticker (NYSE, NASDAQ)
+                    </small>
+                </div>
+
+                <div id="tickerInfoDisplay" style="display: none;">
+                    <div class="ticker-info-card">
+                        <div class="info-row">
+                            <span class="info-label">Symbol:</span>
+                            <span class="info-value" id="displaySymbol">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Company:</span>
+                            <span class="info-value" id="displayName">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Current Price:</span>
+                            <span class="info-value price-highlight" id="displayPrice">--</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Hidden Fields -->
+            <input id="symbol" type="hidden">
+            <input id="holdingName" type="hidden">
+            <input id="price" type="hidden">
+
+            <!-- Shares Input -->
+            <div class="form-group">
+                <label for="quantity">Number of Shares *</label>
+                <input id="quantity" type="number" placeholder="Enter number of shares" min="0.01" step="0.01" required>
+            </div>
+
+            <!-- Price Display -->
+            <div class="current-price-display" id="currentPriceDisplay" style="display: none;">
+                <div class="price-info-box">
+                    <div class="price-info">
+                        <span class="price-label">Purchase Price:</span>
+                        <span class="price-value" id="modalCurrentPrice">--</span>
+                    </div>
+                    <div class="price-note">
+                        <small>Current market price will be used</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
             <div class="loading-price" id="loadingPrice" style="display: none;">
                 <div class="loading-spinner"></div>
                 <span>Fetching live price...</span>
             </div>
 
+            <!-- Form Actions -->
             <div class="modal-actions">
                 <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-                <button type="submit" class="btn-primary">Save Asset</button>
+                <button type="submit" class="btn-primary">Add to Portfolio</button>
             </div>
         </form>
     </div>
 </div>
 
 <script src="dashboard.js"></script>
+<script>
+    // Theme initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        const themeIcon = document.querySelector('.theme-icon');
+
+        document.body.classList.remove('light', 'dark');
+        document.body.classList.add(savedTheme);
+        themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    });
+</script>
 </body>
 </html>

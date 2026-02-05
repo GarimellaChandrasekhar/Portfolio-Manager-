@@ -14,7 +14,7 @@ import java.util.Map;
 public class PortfolioService {
 
     private final HoldingRepository holdingRepository;
-    private final YahooFinanceService yahooFinanceService;
+    //private final YahooFinanceService yahooFinanceService;
 
     public List<Holding> updatePrices(Long portfolioId) {
         List<Holding> holdings = holdingRepository.findByPortfolioId(portfolioId);
@@ -25,14 +25,14 @@ public class PortfolioService {
                 .reduce((a, b) -> a + "," + b)
                 .orElse("");
 
-        Map<String, BigDecimal> prices = yahooFinanceService.fetchPrices(symbols);
+        //Map<String, BigDecimal> prices = yahooFinanceService.fetchPrices(symbols);
 
-        holdings.forEach(h -> {
-            BigDecimal price = prices.get(h.getSymbol());
-            if (price != null) {
-                h.setCurrentPrice(price);
-            }
-        });
+//        holdings.forEach(h -> {
+//            BigDecimal price = prices.get(h.getSymbol());
+//            if (price != null) {
+//                h.setCurrentPrice(price);
+//            }
+//        });
 
         return holdingRepository.saveAll(holdings);
     }

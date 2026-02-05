@@ -29,6 +29,10 @@
                 <span class="nav-icon">🎯</span>
                 <span>Goal Planning</span>
             </a>
+            <a class="nav-link" href="trending-news.html">
+                <span class="nav-icon">📰</span>
+                <span>Trending News</span>
+            </a>
         </nav>
 
         <div class="sidebar-info">
@@ -133,6 +137,26 @@
                     </div>
                     <div class="chart-container">
                         <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market News Section -->
+            <div class="card news-widget-card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">📰 Market News</h3>
+                        <p class="card-subtitle">Latest stock market updates</p>
+                    </div>
+                    <a href="trending-news.html" class="view-all-link">
+                        View All →
+                    </a>
+                </div>
+                <div id="dashboardNewsWidget" class="news-widget-container">
+                    <!-- News will be loaded here -->
+                    <div class="news-widget-loading">
+                        <div class="loading-spinner-small"></div>
+                        <span>Loading news...</span>
                     </div>
                 </div>
             </div>

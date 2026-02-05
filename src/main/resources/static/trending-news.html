@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending News | Portfolio Manager</title>
+    <link rel="stylesheet" href="trending-news.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="light">
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h1 class="logo">
+            <span class="logo-icon">💼</span>
+            <span>Portfolio Manager</span>
+        </h1>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a class="nav-link" href="dashboard.html">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="index.html">
+            <span class="nav-icon">🎯</span>
+            <span>Goal Planning</span>
+        </a>
+        <a class="nav-link active" href="trending-news.html">
+            <span class="nav-icon">📰</span>
+            <span>Trending News</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-info">
+        <h3>💡 Market Insights</h3>
+        <p>Stay updated with the latest stock market news and trending financial stories.</p>
+        <ul class="feature-list">
+            <li>✓ Real-time news feed</li>
+            <li>✓ Stock market updates</li>
+            <li>✓ Financial insights</li>
+            <li>✓ Industry trends</li>
+        </ul>
+    </div>
+</aside>
+
+<!-- Sidebar Backdrop (for mobile) -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- Mobile Sidebar Toggle Button -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    ☰
+</button>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Header -->
+    <header class="top-bar">
+        <div class="header-content">
+            <h1>
+                <span class="logo-icon">📰</span>
+                <span>Trending Stock News</span>
+            </h1>
+
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content">
+        <div id="trendingNewsList" class="news-list">
+            <!-- News items will be dynamically injected here -->
+        </div>
+    </main>
+</div>
+
+<script src="trending-news.js"></script>
+</body>
+</html>

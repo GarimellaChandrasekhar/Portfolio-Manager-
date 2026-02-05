@@ -386,6 +386,42 @@
         </div>
     </div>
 </div>
+<!-- AI Recommendation Section -->
+<div class="card recommendation-card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">🤖 AI Portfolio Recommender</h3>
+            <p class="card-subtitle">
+                Get diversification & rebalancing advice powered by Gemini AI
+            </p>
+        </div>
+
+        <button class="btn-primary" onclick="getRecommendation()">
+            Generate Advice
+        </button>
+    </div>
+
+    <div class="recommendation-body">
+
+        <!-- Loader -->
+        <div id="recLoader" class="rec-loader" style="display:none;">
+            <div class="loading-spinner"></div>
+            <span>Analyzing your portfolio...</span>
+        </div>
+
+        <!-- AI Response -->
+        <div id="recResult" class="rec-result">
+            <div class="empty-message">
+                <span class="empty-icon">🤖</span>
+                <p>
+                    Click <strong>Generate Advice</strong> to get AI-powered
+                    diversification recommendations.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 <script src="dashboard.js"></script>
 <script>

@@ -1552,3 +1552,52 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+/* ================= AI RECOMMENDATION ================= */
+
+async function getRecommendation() {
+
+    const portfolioId = PORTFOLIO_ID; // use your constant
+
+    const loader = document.getElementById("recLoader");
+    const resultBox = document.getElementById("recResult");
+
+    if (!loader || !resultBox) {
+        console.error("Recommendation UI not found");
+        return;
+    }
+
+    loader.style.display = "flex";
+    resultBox.innerHTML = "";
+
+    try {
+
+        const response = await fetch(
+            `${BASE_URL}/api/recommendation/${portfolioId}`
+        );
+
+        if (!response.ok) {
+            throw new Error("API failed");
+        }
+
+        const data = await response.json();
+
+        loader.style.display = "none";
+
+        resultBox.innerHTML = `
+            <div class="ai-response">
+                <pre>${data.recommendation}</pre>
+            </div>
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+        loader.style.display = "none";
+
+        resultBox.innerHTML = `
+            <div class="error-message">
+                ❌ Failed to fetch AI recommendation.
+            </div>
+        `;
+    }
+}

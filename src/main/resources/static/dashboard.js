@@ -43,12 +43,14 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("1. Visit: https://finnhub.io/register");
         console.warn("2. Sign up for a free account");
         console.warn("3. Copy your API key");
-        console.warn("4. Replace 'YOUR_FINNHUB_API_KEY' in dashboard.js (line 5)");
+        console.warn("4. Replace 'YOUR_FINNHUB_API_KEY' in dashboard.js (line 6)");
         console.warn("5. Refresh the page");
         console.warn("═══════════════════════════════════════════════════════");
     }
 
     loadDashboard();
+    loadNewsWidget(); // Load news widget
+
     // Update prices every 60 seconds
     priceUpdateInterval = setInterval(() => refreshPrices(), 60000);
 });
@@ -57,6 +59,103 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener('beforeunload', () => {
     if (priceUpdateInterval) clearInterval(priceUpdateInterval);
 });
+
+/* ================= NEWS WIDGET FUNCTIONS ================= */
+
+async function fetchNewsForWidget() {
+    try {
+        if (!FINNHUB_API_KEY || FINNHUB_API_KEY === "YOUR_FINNHUB_API_KEY") {
+            console.warn("Finnhub API key not configured for news.");
+            return [];
+        }
+
+        const response = await fetch(
+            `https://finnhub.io/api/v1/news?category=general&token=${FINNHUB_API_KEY}`
+        );
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch news from Finnhub');
+        }
+
+        const data = await response.json();
+        return data.slice(0, 5); // Get only first 5 news items
+    } catch (error) {
+        console.error("Error fetching news for widget:", error);
+        return [];
+    }
+}
+
+async function loadNewsWidget() {
+    const newsContainer = document.getElementById('dashboardNewsWidget');
+
+    if (!newsContainer) {
+        console.warn('News widget container not found');
+        return;
+    }
+
+    try {
+        const news = await fetchNewsForWidget();
+
+        if (news.length === 0) {
+            newsContainer.innerHTML = `
+                <div class="news-widget-empty">
+                    <span class="empty-icon">📰</span>
+                    <p>No news available at the moment</p>
+                    <a href="trending-news.html" class="btn-link">View All News →</a>
+                </div>
+            `;
+            return;
+        }
+
+        // Build news items HTML
+        let newsHTML = '';
+        news.forEach((article, index) => {
+            // Format the date
+            let dateDisplay = '';
+            if (article.datetime) {
+                const date = new Date(article.datetime * 1000);
+                const now = new Date();
+                const diffHours = Math.floor((now - date) / (1000 * 60 * 60));
+
+                if (diffHours < 1) {
+                    dateDisplay = 'Just now';
+                } else if (diffHours < 24) {
+                    dateDisplay = `${diffHours}h ago`;
+                } else {
+                    const diffDays = Math.floor(diffHours / 24);
+                    dateDisplay = `${diffDays}d ago`;
+                }
+            }
+
+            const source = article.source || 'Unknown Source';
+
+            newsHTML += `
+                <div class="news-widget-item" style="animation-delay: ${index * 0.1}s">
+                    <div class="news-widget-meta">
+                        <span class="news-widget-time">${dateDisplay}</span>
+                        <span class="news-widget-source">${source}</span>
+                    </div>
+                    <h4 class="news-widget-title">${article.headline}</h4>
+                    <p class="news-widget-summary">${article.summary || "No description available"}</p>
+                    <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="news-widget-link">
+                        Read more →
+                    </a>
+                </div>
+            `;
+        });
+
+        newsContainer.innerHTML = newsHTML;
+
+    } catch (error) {
+        console.error("Error loading news widget:", error);
+        newsContainer.innerHTML = `
+            <div class="news-widget-error">
+                <span class="error-icon">⚠️</span>
+                <p>Failed to load news</p>
+            </div>
+        `;
+    }
+}
 
 /* ================= FINNHUB API FUNCTIONS ================= */
 
@@ -687,7 +786,7 @@ function showNotification(message, type = "info") {
     }, 5000);
 }
 
-// Add animation styles
+// Add animation and styling
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideInRight {
@@ -709,6 +808,164 @@ style.textContent = `
             transform: translateX(400px);
             opacity: 0;
         }
+    }
+
+    /* News Widget Styles */
+    .news-widget-card {
+        grid-column: 1 / -1;
+    }
+
+    .news-widget-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .news-widget-loading,
+    .news-widget-empty,
+    .news-widget-error {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+
+    .loading-spinner-small {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--border-color);
+        border-top-color: var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .news-widget-item {
+        padding: 1.25rem;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .news-widget-item:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateX(4px);
+    }
+
+    .news-widget-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .news-widget-time {
+        font-weight: 600;
+    }
+
+    .news-widget-source {
+        padding: 0.125rem 0.5rem;
+        background: var(--bg-color);
+        border-radius: 4px;
+    }
+
+    .news-widget-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .news-widget-summary {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin: 0 0 0.75rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .news-widget-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: gap 0.2s ease;
+    }
+
+    .news-widget-link:hover {
+        gap: 0.5rem;
+    }
+
+    .view-all-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: transform 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .view-all-link:hover {
+        gap: 0.5rem;
+    }
+
+    .empty-icon,
+    .error-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-link {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-link:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
     }
 `;
 document.head.appendChild(style);

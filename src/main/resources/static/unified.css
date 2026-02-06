@@ -1220,3 +1220,37 @@ aside.sidebar {
         flex: 1;
     }
 }
+/* AI Recommendation Card */
+.recommendation-card {
+    grid-column: span 2;
+}
+
+/* Body */
+.recommendation-body {
+    padding: 1.5rem;
+}
+
+/* Loader */
+.rec-loader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+}
+
+/* AI Response Box */
+.ai-response {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 12px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+}
+
+/* Error */
+.error-message {
+    color: #ff4d4f;
+    font-weight: 500;
+}
